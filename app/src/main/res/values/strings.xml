@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">MenuchApp</string>
+    <string name="add_food">Comida</string>
+    <string name="add_ingr">Ingrediente</string>
+    <string name="add_food2">Añadir comida</string>
+    <string name="add_ingr2">Añadir ingredientes</string>
+    <string name="db_content">Base de datos</string>
+    <string name="menu">Menu</string>
+    <string name="shop">shop</string>
+    <string name="shop_list">Lista de la compra</string>
+    <string name="debug">Debug</string>
+    <string name="almuerzo">Almuerzo</string>
+    <string name="cena">Cena</string>
+    <string name="legumbre">Legumbres</string>
+    <string name="pescado">Pescado</string>
+    <string name="carne">Carne</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="mercadona">Mercadona</string>
+    <string name="fruteria">Fruteria</string>
+    <string name="cash"><![CDATA[Cash&Fresh]]></string>
+    <string name="buscardb">Buscar en la base de datos</string>
+    <string name="buscar">Buscar</string>
+    <string name="l">Lunes</string>
+    <string name="m">Martes</string>
+    <string name="x">Miercoles</string>
+    <string name="j">Jueves</string>
+    <string name="v">Viernes</string>
+    <string name="s">Sabado</string>
+    <string name="d">Domingo</string>
+    <string name="ok">OK</string>
+</resources>

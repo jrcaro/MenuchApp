@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/menu"
+        android:title="@string/menu"
+        android:icon="@drawable/baseline_calendar_today_black_36"
+        app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/shop_list"
+        android:title="@string/shop"
+        android:icon="@drawable/baseline_list_alt_black_36"
+        app:showAsAction="always" />
+
+    <!-- MENU -->
+
+    <item
+        android:id="@+id/addFood"
+        android:title="@string/add_food"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/addIngr"
+        android:title="@string/add_ingr"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/database"
+        android:title="@string/db_content"
+        android:icon="@drawable/baseline_storage_black_48"
+        app:showAsAction="never" />
+</menu>
