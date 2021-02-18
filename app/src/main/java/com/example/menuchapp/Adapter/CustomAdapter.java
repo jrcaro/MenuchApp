@@ -60,7 +60,7 @@ public class CustomAdapter extends BaseAdapter {
         final int count = tvShop.get(position).getNumber();
         final String ingr = tvShop.get(position).getIngredient();
         boolean check = tvShop.get(position).getCheck().equals("1");
-        String foodText = "x" + count;
+        String foodText = "x" + count;;
         ingrTxt.setText(ingr);
         db.open();
 

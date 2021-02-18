@@ -1,7 +1,6 @@
 package com.example.menuchapp.Activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,16 +10,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.abdeveloper.library.MultiSelectDialog;
 import com.abdeveloper.library.MultiSelectModel;
-import com.example.menuchapp.MainActivity;
+import com.example.menuchapp.MainActivityGrid;
 import com.example.menuchapp.R;
 import com.example.menuchapp.SQLite.DatabaseAccess;
 
@@ -30,8 +26,8 @@ public class AddFoodActivity extends AppCompatActivity {
 
     private Button btnAdd, btnCancel, btnIngrs;
     private EditText etName;
-    private RadioButton rbLunch, rbDinner, rbLeg, rbFish, rbMet;
-    private String strType, strTime;
+    private RadioButton rbLunch, rbDinner, rbLeg, rbFish, rbMet, rbWeek, rbWeekend;
+    private String strType, strTime, strWeek;
     private String foodIngredients = "(";
     MultiSelectDialog multiSelectDialog;
     private String TAG = "Cancel";
@@ -55,6 +51,8 @@ public class AddFoodActivity extends AppCompatActivity {
         rbLeg = findViewById(R.id.rbLegumbres);
         rbFish = findViewById(R.id.rbPescado);
         rbMet = findViewById(R.id.rbCarne);
+        rbWeek = findViewById(R.id.rbWeek);
+        rbWeekend = findViewById(R.id.rbWeekend);
         btnIngrs = findViewById(R.id.btIngr);
 
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
@@ -83,9 +81,9 @@ public class AddFoodActivity extends AppCompatActivity {
                                 //will return list of selected IDS
                                 for (int i = 0; i < selectedIds.size(); i++) {
                                     if (i == selectedIds.size() - 1) {
-                                        foodIngredients = foodIngredients + "'" + selectedNames.get(i).toLowerCase() + "')";
+                                        foodIngredients = foodIngredients + "'" + selectedNames.get(i) + "')";
                                     } else {
-                                        foodIngredients = foodIngredients + "'" + selectedNames.get(i).toLowerCase() + "',";
+                                        foodIngredients = foodIngredients + "'" + selectedNames.get(i) + "',";
                                     }
                                 }
                             }
@@ -129,6 +127,12 @@ public class AddFoodActivity extends AppCompatActivity {
                         strType = "carne";
                     }
 
+                    if (rbWeek.isChecked()) {
+                        strWeek = "0";
+                    } else {
+                        strWeek = "1";
+                    }
+
                     if (foodIngredients.split(",").length == 1) {
                         btnIngrs.setError("Añade los ingredientes");
                         btnIngrs.requestFocus();
@@ -143,7 +147,7 @@ public class AddFoodActivity extends AppCompatActivity {
                         etName.requestFocus();
                         databaseAccess.close();
                     } else {
-                        databaseAccess.setDataToFood(name + "," + strTime + "," + strType);
+                        databaseAccess.setDataToFood(name + "," + strTime + "," + strType + "," + strWeek);
                         databaseAccess.setFoodToIngredients(name, foodIngredients);
                         foodIngredients = "(";
                         databaseAccess.close();
@@ -163,7 +167,7 @@ public class AddFoodActivity extends AppCompatActivity {
     }
 
     private boolean validate() {
-        boolean validType, validTime;
+        boolean validType, validTime, validWeek;
 
         if (!rbDinner.isChecked() && !rbLunch.isChecked()) {
             rbDinner.setError("Selec Item");
@@ -184,7 +188,16 @@ public class AddFoodActivity extends AppCompatActivity {
         }
         clearFocus();
 
-        if (validType && validTime) {
+        if (!rbWeek.isChecked() && !rbWeekend.isChecked()) {
+            rbWeek.setError("Selec Item");
+            validWeek = false;
+        } else {
+            rbWeek.setError(null);
+            validWeek = true;
+        }
+        clearFocus();
+
+        if (validType && validTime && validWeek) {
             return true;
         } else {
             return false;
@@ -207,7 +220,7 @@ public class AddFoodActivity extends AppCompatActivity {
             case android.R.id.home:
                 // todo: goto back activity from here
 
-                Intent intent = new Intent(AddFoodActivity.this, MainActivity.class);
+                Intent intent = new Intent(AddFoodActivity.this, MainActivityGrid.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();

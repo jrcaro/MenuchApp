@@ -38,8 +38,10 @@ public class CashFragment extends Fragment {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this.getContext());
         databaseAccess.open();
 
-        list = databaseAccess.getArrayFrom("name, count(name), check_buy",
+        list = databaseAccess.getArrayFrom("name, count, check_buy",
                 "shop_list", "place", "carniceria");
+
+        databaseAccess.close();
 
         return list;
     }

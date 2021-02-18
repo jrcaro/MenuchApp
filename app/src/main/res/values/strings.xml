@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MenuchApp</string>
     <string name="add_food">Comida</string>
-    <string name="add_ingr">Ingrediente</string>
+    <string name="add_ingr">Ingredientes</string>
     <string name="add_food2">Añadir comida</string>
     <string name="add_ingr2">Añadir ingredientes</string>
     <string name="db_content">Base de datos</string>
@@ -29,4 +29,6 @@
     <string name="s">Sabado</string>
     <string name="d">Domingo</string>
     <string name="ok">OK</string>
+    <string name="semana">Entre semana</string>
+    <string name="finde">Finde</string>
 </resources>

@@ -13,7 +13,7 @@ import android.widget.RadioButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.menuchapp.MainActivity;
+import com.example.menuchapp.MainActivityGrid;
 import com.example.menuchapp.R;
 import com.example.menuchapp.SQLite.DatabaseAccess;
 
@@ -124,7 +124,7 @@ public class AddIngredientActivity extends AppCompatActivity {
             case android.R.id.home:
                 // todo: goto back activity from here
 
-                Intent intent = new Intent(AddIngredientActivity.this, MainActivity.class);
+                Intent intent = new Intent(AddIngredientActivity.this, MainActivityGrid.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();

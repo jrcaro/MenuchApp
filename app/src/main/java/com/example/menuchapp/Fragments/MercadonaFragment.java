@@ -23,8 +23,6 @@ import java.util.ArrayList;
 
 public class MercadonaFragment extends Fragment {
 
-    CheckBox ch;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -44,8 +42,10 @@ public class MercadonaFragment extends Fragment {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this.getContext());
         databaseAccess.open();
 
-        list = databaseAccess.getArrayFrom("name, count(name), check_buy",
+        list = databaseAccess.getArrayFrom("name, count, check_buy",
                 "shop_list", "place", "mercadona");
+
+        databaseAccess.close();
 
         return list;
     }

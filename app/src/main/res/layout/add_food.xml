@@ -77,6 +77,30 @@
             android:textSize="10pt" />
     </RadioGroup>
 
+    <RadioGroup
+        android:id="@+id/rgWeekend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rgType">
+
+        <RadioButton
+            android:id="@+id/rbWeek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/semana"
+            android:textSize="10pt" />
+
+        <RadioButton
+            android:id="@+id/rbWeekend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/finde"
+            android:textSize="10pt" />
+    </RadioGroup>
+
     <Button
         android:id="@+id/btIngr"
         android:layout_width="wrap_content"
@@ -87,7 +111,7 @@
         android:paddingRight="6dip"
         android:text="@string/add_ingr"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rgType" />
+        app:layout_constraintTop_toBottomOf="@+id/rgWeekend" />
 
     <TextView
         android:id="@+id/tvIngredients"

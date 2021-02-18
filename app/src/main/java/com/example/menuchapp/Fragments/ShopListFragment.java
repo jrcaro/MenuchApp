@@ -6,24 +6,17 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.abdeveloper.library.MultiSelectDialog;
 import com.abdeveloper.library.MultiSelectModel;
-import com.example.menuchapp.Activities.AddFoodActivity;
 import com.example.menuchapp.Adapter.CustomPagerAdapter;
-import com.example.menuchapp.MainActivity;
+import com.example.menuchapp.MainActivityGrid;
 import com.example.menuchapp.R;
 import com.example.menuchapp.SQLite.DatabaseAccess;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -58,7 +51,7 @@ public class ShopListFragment extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                multiSelectDialog = new MultiSelectDialog()
+               multiSelectDialog = new MultiSelectDialog()
                         .title(getResources().getString(R.string.add_ingr2)) //setting title for dialog
                         .titleSize(25)
                         .positiveText(getResources().getString(R.string.ok))
@@ -71,14 +64,7 @@ public class ShopListFragment extends AppCompatActivity implements
                             @Override
                             public void onSelected(ArrayList<Integer> selectedIds, ArrayList<String> selectedNames, String dataString) {
                                 //will return list of selected IDS
-                                for (int i = 0; i < selectedIds.size(); i++) {
-                                    if (i == selectedIds.size() - 1) {
-                                        foodIngredients = foodIngredients + "'" + selectedNames.get(i).toLowerCase() + "')";
-                                    } else {
-                                        foodIngredients = foodIngredients + "'" + selectedNames.get(i).toLowerCase() + "',";
-                                    }
-                                }
-                                databaseAccess.setIngredientToShop(foodIngredients);
+                                databaseAccess.setIngredientToShop(selectedNames);
                                 foodIngredients = "(";
                                 addPages();
                             }
@@ -152,7 +138,7 @@ public class ShopListFragment extends AppCompatActivity implements
             case android.R.id.home:
                 // todo: goto back activity from here
 
-                Intent intent = new Intent(this.getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(this.getApplicationContext(), MainActivityGrid.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();

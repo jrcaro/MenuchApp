@@ -1,4 +1,4 @@
-package com.example.menuchapp.SQLite;
+package com.example.menuchapp.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,8 +16,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.menuchapp.MainActivity;
+import com.example.menuchapp.MainActivityGrid;
 import com.example.menuchapp.R;
+import com.example.menuchapp.SQLite.DatabaseAccess;
 
 public class DatabaseContentActivity extends AppCompatActivity {
 
@@ -94,7 +95,7 @@ public class DatabaseContentActivity extends AppCompatActivity {
             case android.R.id.home:
                 // todo: goto back activity from here
 
-                Intent intent = new Intent(DatabaseContentActivity.this, MainActivity.class);
+                Intent intent = new Intent(DatabaseContentActivity.this, MainActivityGrid.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();

@@ -39,8 +39,10 @@ public class FruteriaFragment extends Fragment {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this.getContext());
         databaseAccess.open();
 
-        list = databaseAccess.getArrayFrom("name, count(name), check_buy",
+        list = databaseAccess.getArrayFrom("name, count, check_buy",
                 "shop_list", "place", "fruteria");
+
+        databaseAccess.close();
 
         return list;
     }

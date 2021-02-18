@@ -3,12 +3,15 @@ package com.example.menuchapp.SQLite;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import com.example.menuchapp.Models.ShopModel;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class DatabaseAccess {
     private SQLiteOpenHelper openHelper;
@@ -33,7 +36,7 @@ public class DatabaseAccess {
     }
 
     public void close() {
-        if(db != null) {
+        if (db != null) {
             this.db.close();
         }
     }
@@ -41,9 +44,9 @@ public class DatabaseAccess {
     public String getDataFrom(String tableName) {
         c = db.rawQuery("select * from " + tableName, new String[]{});
         StringBuffer buffer = new StringBuffer();
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             int columnCount = c.getColumnCount();
-            for (int i =0; i<columnCount; i++){
+            for (int i = 0; i < columnCount; i++) {
                 String data = c.getString(i);
                 buffer.append(data + "\t\t| ");
             }
@@ -57,7 +60,7 @@ public class DatabaseAccess {
                 " = " + filter, new String[]{});
         StringBuffer buffer = new StringBuffer();
 
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             buffer.append(c.getString(0));
         }
 
@@ -66,12 +69,12 @@ public class DatabaseAccess {
 
     public ArrayList<String> getArrayFrom(String tableName, String column, String filter, int columnIndex) {
         c = db.rawQuery("select * from " + tableName + " where "
-                + column + "=" + "'"+ filter + "'", new String[]{});
+                + column + "=" + "'" + filter + "'", new String[]{});
 
         StringBuffer buffer = new StringBuffer();
         ArrayList<String> result = new ArrayList<>();
 
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             result.add(c.getString(columnIndex));
         }
 
@@ -80,28 +83,28 @@ public class DatabaseAccess {
 
     public ArrayList<ShopModel> getArrayFrom(String select, String tableName, String column, String filter) {
         c = db.rawQuery("select " + select + " from " + tableName + " where "
-                + column + "=" + "'"+ filter + "' group by name order by name", new String[]{});
+                + column + "=" + "'" + filter + "' order by name", new String[]{});
 
         StringBuffer buffer = new StringBuffer();
         ArrayList<ShopModel> result = new ArrayList<>();
 
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             result.add(new ShopModel(c.getString(0),
                     c.getInt(1),
                     c.getString(2)));
         }
 
-        for(ShopModel sh : result){
-            sh.setIngredient(sh.getIngredient().substring(0, 1).toUpperCase() + sh.getIngredient().substring(1));
+        for (ShopModel sh : result) {
+            sh.setIngredient(sh.getIngredient());
         }
 
         return result;
     }
 
     public boolean isInDatabase(String tableName, String filter) {
-        c = db.rawQuery("select * from " + tableName + " where name=" + "'"+ filter + "'", new String[]{});
+        c = db.rawQuery("select * from " + tableName + " where name=" + "'" + filter + "'", new String[]{});
         int count = 0;
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             count++;
         }
 
@@ -111,7 +114,7 @@ public class DatabaseAccess {
     public boolean isEmpty(String tableName) {
         c = db.rawQuery("select * from " + tableName, new String[]{});
         int count = 0;
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             count++;
         }
 
@@ -119,101 +122,138 @@ public class DatabaseAccess {
     }
 
     public ArrayList<String> getLunchFoodRandom() {
-        String strQuery = "select * from (select * from food" +
-                " where type='legumbres'" +
-                " and time='almuerzo'" +
-                " order by RANDOM() limit 3)" +
-                " union select * from (select * from food" +
-                " where type='pescado'" +
-                " and time='almuerzo'" +
-                " order by RANDOM() limit 2)" +
-                " union select * from (select * from food" +
-                " where type='carne'" +
-                " and time='almuerzo'" +
-                " order by RANDOM() limit 2)";
-
-        c = db.rawQuery(strQuery, new String[]{});
+        long foodCount;
+        Random rdnId = new Random();
+        int selectID;
+        int prevID = 1000;
         ArrayList<String> result = new ArrayList<>();
-
         ContentValues dataInsert = new ContentValues();
-        int i = 0;
+        String[] queries = new String[]{
+                "type='legumbres' and (time='almuerzo' or time='') and weekend='0'",
+                "type='pescado' and (time='almuerzo' or time='') and weekend='0'",
+                "(time='almuerzo' or time='')",
+        };
+        int j = 0;
 
-        while(c.moveToNext()){
+        for (String query : queries) {
+            foodCount = DatabaseUtils.queryNumEntries(db, "food", query);
+            c = db.rawQuery("select * from food where " + query + "order by RANDOM()", new String[]{});
+            for (int i = 0; i < 2; i++) {
+                selectID = rdnId.nextInt((int) foodCount);
+                while(selectID == prevID){
+                    selectID = rdnId.nextInt((int) foodCount);
+                }
+                prevID = selectID;
+
+                if (c.moveToPosition(selectID)) {
+                    result.add(c.getString(1));
+                    dataInsert.put("day", DAYS_OF_WEEK[j]);
+                    dataInsert.put("food", c.getString(1));
+                    dataInsert.put("time", "almuerzo");
+                    db.insert("menu", null, dataInsert);
+                }
+                j++;
+            }
+        }
+
+        foodCount = DatabaseUtils.queryNumEntries(db, "food", "type='carne' and (time='almuerzo' or time='') and weekend='0'");
+        c = db.rawQuery("select * from food where type='carne' and (time='almuerzo' or time='') and weekend='0' order by RANDOM()", new String[]{});
+        selectID = rdnId.nextInt((int) foodCount + 1);
+        if (c.moveToPosition(selectID)) {
             result.add(c.getString(1));
-            dataInsert.put("day", DAYS_OF_WEEK[i]);
+            dataInsert.put("day", DAYS_OF_WEEK[6]);
             dataInsert.put("food", c.getString(1));
             dataInsert.put("time", "almuerzo");
             db.insert("menu", null, dataInsert);
-            i++;
         }
 
         return result;
     }
 
     public ArrayList<String> getDinnerFoodRandom() {
-        String strQuery = "select * from food" +
-                " where time='cena'" +
-                " order by RANDOM() limit 6";
-
-        c = db.rawQuery(strQuery, new String[]{});
+        long foodCount;
+        Random rdnId = new Random();
+        int selectID;
+        int prevID = 1000;
         ArrayList<String> result = new ArrayList<>();
-
         ContentValues dataInsert = new ContentValues();
-        int i = 0;
 
-        while(c.moveToNext()){
+        foodCount = DatabaseUtils.queryNumEntries(db, "food", "(time='cena' or time='') and weekend='0'");
+        c = db.rawQuery("select * from food where (time='cena' or time='') and weekend='0' order by RANDOM()", new String[]{});
+        for (int i = 0; i < 5; i++) {
+            selectID = rdnId.nextInt((int) foodCount);
+            while(selectID == prevID){
+                selectID = rdnId.nextInt((int) foodCount);
+            }
+            prevID = selectID;
+
+            if (c.moveToPosition(selectID)) {
+                result.add(c.getString(1));
+                dataInsert.put("day", DAYS_OF_WEEK[i]);
+                dataInsert.put("food", c.getString(1));
+                dataInsert.put("time", "cena");
+                db.insert("menu", null, dataInsert);
+            }
+        }
+
+        foodCount = DatabaseUtils.queryNumEntries(db, "food", "time='cena' or time=''");
+        c = db.rawQuery("select * from food where time='cena' or time='' order by RANDOM()", new String[]{});
+        selectID = rdnId.nextInt((int) foodCount + 1);
+        if (c.moveToPosition(selectID)) {
             result.add(c.getString(1));
-            dataInsert.put("day", DAYS_OF_WEEK[i]);
+            dataInsert.put("day", DAYS_OF_WEEK[5]);
             dataInsert.put("food", c.getString(1));
             dataInsert.put("time", "cena");
             db.insert("menu", null, dataInsert);
-            i++;
         }
 
         return result;
     }
 
-    public void getIngredientsRelated(ArrayList<String> food){
-        String query = "select * from ingredients where id in " +
-                "(select id_ingredient from food_to_ingredients where id_food in " +
-                "(select id from food where name in (";
+    public void getIngredientsRelated(ArrayList<String> food) {
+        String query = "select name,place,count from ingredients inner join " +
+                "(select id_ingredient, count(id_ingredient) as count from food_to_ingredients where id_food in (" +
+                "select id from food where name in (";
 
         StringBuilder builder = new StringBuilder();
-        for(String s : food) {
-            builder.append("'"+s+"',");
+        for (String s : food) {
+            builder.append("'" + s + "',");
         }
         String temp = builder.toString();
-        String strQuery = query + temp.substring(0, temp.length()-1) + ")))";
+        String strQuery = query + temp.substring(0, temp.length() - 1) +
+                ")) group by id_ingredient) as icount " +
+                "on id=icount.id_ingredient";
 
         c = db.rawQuery(strQuery, new String[]{});
         ContentValues dataInsert = new ContentValues();
         db.delete("shop_list", null, null);
 
-        while(c.moveToNext()){
-            dataInsert.put("name", c.getString(1));
-            dataInsert.put("place", c.getString(2));
+        while (c.moveToNext()) {
+            dataInsert.put("name", c.getString(0));
+            dataInsert.put("place", c.getString(1));
+            dataInsert.put("count", c.getInt(2));
             db.insert("shop_list", null, dataInsert);
         }
     }
 
     public void setDataToFood(String dataRaw) {
-        String [] data = dataRaw.split(",");
+        String[] data = dataRaw.split(",");
         ContentValues dataInsert = new ContentValues();
-        String[] columns = {"name", "time", "type"};
+        String[] columns = {"name", "time", "type", "weekend"};
 
-        for(int i=0; i<data.length;i++){
-            dataInsert.put(columns[i],data[i]);
+        for (int i = 0; i < data.length; i++) {
+            dataInsert.put(columns[i], data[i]);
         }
         db.insert("food", null, dataInsert);
     }
 
     public void setDataToIngr(String dataRaw) {
-        String [] data = dataRaw.split(",");
+        String[] data = dataRaw.split(",");
         ContentValues dataInsert = new ContentValues();
         String[] columns = {"name", "place"};
 
-        for(int i=0; i<data.length;i++){
-            dataInsert.put(columns[i],data[i]);
+        for (int i = 0; i < data.length; i++) {
+            dataInsert.put(columns[i], data[i]);
         }
         db.insert("ingredients", null, dataInsert);
     }
@@ -222,22 +262,34 @@ public class DatabaseAccess {
         c = db.rawQuery("select name from ingredients order by name", new String[]{});
         String[] ingredients = new String[c.getCount()];
         int i = 0;
-        while(c.moveToNext()){
-            ingredients[i] = c.getString(0).substring(0, 1).toUpperCase() + c.getString(0).substring(1);
+        while (c.moveToNext()) {
+            ingredients[i] = c.getString(0);
             i++;
         }
 
-        return  ingredients;
+        return ingredients;
     }
 
-    public void setFoodToIngredients(String food, String ingreList){
+    public String[] getFoods() {
+        c = db.rawQuery("select name from food order by name", new String[]{});
+        String[] ingredients = new String[c.getCount()];
+        int i = 0;
+        while (c.moveToNext()) {
+            ingredients[i] = c.getString(0);
+            i++;
+        }
+
+        return ingredients;
+    }
+
+    public void setFoodToIngredients(String food, String ingreList) {
         ContentValues foodToIngr = new ContentValues();
         c = db.rawQuery("select * from food", new String[]{});
         c.moveToLast();
         int id_food = c.getInt(0);
 
         c = db.rawQuery("select * from ingredients where name in " + ingreList, new String[]{});
-        while(c.moveToNext()){
+        while (c.moveToNext()) {
             foodToIngr.put("id_food", id_food);
             foodToIngr.put("id_ingredient", c.getInt(0));
             db.insert("food_to_ingredients", null, foodToIngr);
@@ -245,26 +297,48 @@ public class DatabaseAccess {
 
     }
 
-    public void setIngredientToShop(String dataRaw){
-        ContentValues ingrToShop = new ContentValues();
-        c = db.rawQuery("select * from ingredients where name in " + dataRaw , new String[]{});
-
-        while(c.moveToNext()){
-            ingrToShop.put("name", c.getString(1));
-            ingrToShop.put("place", c.getString(2));
-            db.insert("shop_list", null, ingrToShop);
+    public void setIngredientToShop(ArrayList<String> dataRaw) {
+        for (String ingr : dataRaw) {
+            if (isInDatabase("shop_list", ingr)) {
+                c = db.rawQuery("select * from shop_list where name='" + ingr + "'", new String[]{});
+                c.moveToFirst();
+                int cuantity = c.getInt(3);
+                setValueToShopList(ingr, cuantity + 1, "count");
+            } else {
+                ContentValues ingrToShop = new ContentValues();
+                c = db.rawQuery("select * from ingredients where name='" + ingr + "'", new String[]{});
+                c.moveToFirst();
+                ingrToShop.put("name", c.getString(1));
+                ingrToShop.put("place", c.getString(2));
+                ingrToShop.put("count", 1);
+                db.insert("shop_list", null, ingrToShop);
+            }
         }
-
     }
 
-    public void deleteTable(String tableName){
+    public void deleteTable(String tableName) {
         db.delete(tableName, null, null);
     }
 
-    public void setValueToShopList(String filter, String value){
-        String query = "update shop_list set check_buy = '" + value +
-                "' where name = '" + filter + "'";
+    public void setValueToShopList(String filter, String value) {
+        ContentValues valores = new ContentValues();
+        valores.put("check_buy", value);
 
-        db.execSQL(query, new String[]{});
+        db.update("shop_list", valores, "name='" + filter + "'", null);
+    }
+
+    public void setValueToShopList(String filter, int value, String column) {
+        ContentValues valores = new ContentValues();
+        valores.put(column, value);
+
+        db.update("shop_list", valores, "name='" + filter + "'", null);
+    }
+
+    public void setValueToMenu(String filterDay, String filterTime, String value) {
+        ;
+        ContentValues valores = new ContentValues();
+        valores.put("food", value.trim());
+
+        db.update("menu", valores, "day='" + filterDay + "' and time='" + filterTime + "'", null);
     }
 }
